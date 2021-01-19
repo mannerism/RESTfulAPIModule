@@ -39,25 +39,48 @@ class MainViewController: UIViewController {
 	}
 	
 	@objc func handleStart() {
+//		createUser()
 		getUsersList()
 	}
 	
 	/// Get users list
 	func getUsersList() {
+//		guard let url = URL(string: "https://reqres.in/api/users") else { return }
+//		rest.urlQueryParameters.add(value: "1", forKey: "page")
+//		rest.requestDelegate = self
+//		rest.makeRequest(
+//			toURL: url,
+//			withHttpMethod: .get
+//		)
 		guard let url = URL(string: "https://reqres.in/api/users") else { return }
-		rest.makeRequest(
-			toURL: url,
-			withHttpMethod: .get) { (result) in
-			/// 1. result 안에 있는 data를 unwrapping
-			/// 2. unwrapped된 data를 JsonDecoder라는 class를 사용하여 JSON -> 커스텀 Struct로 디코딩 진행
-			/// 3. try? 를 붙이는 이유는 try catch 구문을 간단하게 적기 위해서 사용
-			/// 4. Decodable protocol을 채택한 strcut의 meta type을 지정해 줌으로써, 내가 받을 객체가 이것이다 라고 알려줌
-			/// 5. 끝
-			guard let data = result.data,
-						let decoded = try? JSONDecoder().decode(Users.self, from: data) else { return }
-			print("총 사용자 수는 \(decoded.data.count) 명 입니다")
-		}
+		rest.dataDelegate = self
+		rest.getData(fromURL: url)
 	}
+	
+//	func createUser() {
+//		guard let url = URL(string: "https://reqres.in/api/users") else { return }
+//		rest.requestHttpHeaders.add(value: "application/json", forKey: "Content-Type")
+//		rest.httpBodyParameters.add(value: "SMIZZ", forKey: "name")
+//		rest.httpBodyParameters.add(value: "Developer", forKey: "job")
+//		rest.makeRequest(
+//			toURL: url,
+//			withHttpMethod: .post) { (results) in
+//			guard let statusCode = results.response?.httpStatusCode else { return }
+//			if statusCode > 200 && statusCode < 300 {
+//				print("유저 생성 완료")
+//				guard let data = results.data,
+//							let decoded = try? JSONDecoder().decode(
+//								CreateUserResponse.self,
+//								from: data) else { return }
+//				print("새로 만들어진 이름: \(decoded.name)")
+//				print("새로온 사람의 일: \(decoded.job)")
+//				print("만들어진 시간: \(decoded.createdTime)")
+//
+//			} else {
+//				print("유저 생성 실패")
+//			}
+//		}
+//	}
 	
 	private func startAPIButtonConstraints() {
 		startAPIButton.translatesAutoresizingMaskIntoConstraints = false
@@ -66,4 +89,27 @@ class MainViewController: UIViewController {
 		startAPIButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
 		startAPIButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
 	}
+}
+
+extension MainViewController: RestManagerRequestDelegate {
+	func didFailToPrepareRequest(_ result: RestManager.Results) {
+		print("did fail to prepare request")
+	}
+	
+	func didReceiveResponseFromDataTask(_ result: RestManager.Results) {
+		guard let data = result.data,
+					let decoded = try? JSONDecoder().decode(Users.self, from: data) else { return }
+		print(decoded)
+	}
+}
+
+extension MainViewController: RestManagerDataDelegate {
+	func didFailToGetData() {
+		print("failed to get data")
+	}
+	
+	func didReceiveData(_ data: Data) {
+		print("did receive data! \(data)")
+	}
+	
 }

@@ -7,6 +7,16 @@
 
 import Foundation
 
+protocol RestManagerRequestDelegate: class {
+	func didFailToPrepareRequest(_ result: RestManager.Results)
+	func didReceiveResponseFromDataTask(_ result: RestManager.Results)
+}
+
+protocol RestManagerDataDelegate: class {
+	func didFailToGetData()
+	func didReceiveData(_ data: Data)
+}
+
 class RestManager {
 	
 	/// Reqeust
@@ -17,6 +27,10 @@ class RestManager {
 	/// Optional
 	var httpBody: Data?
 	
+	/// Delegate
+	weak var requestDelegate: RestManagerRequestDelegate?
+	weak var dataDelegate: RestManagerDataDelegate?
+	
 	/// Response
 	/// 1. Numeric status(http status code)
 	/// 2. http headers
@@ -25,17 +39,18 @@ class RestManager {
 	/// Making a request to a server
 	func makeRequest(
 		toURL url: URL,
-		withHttpMethod httpMethod: HttpMethod,
-		completion: @escaping (_ result: Results) -> Void
+		withHttpMethod httpMethod: HttpMethod
 	) {
 		DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-			let targetURL = self?.addURLQueryParameters(toURL: url)
-			let httpBody = self?.getHttpBody()
-			guard let request = self?.prepareRequest(
+			guard let self = self else { return }
+			let targetURL = self.addURLQueryParameters(toURL: url)
+			let httpBody = self.getHttpBody()
+			guard let request = self.prepareRequest(
 							withURL: targetURL,
 							httpBody: httpBody,
 							httpMethod: httpMethod) else {
-				completion(
+				/// Case 1: When failed to create request
+				self.requestDelegate?.didFailToPrepareRequest(
 					Results(withError: CustomError.failedToCreateRequest)
 				)
 				return
@@ -43,11 +58,13 @@ class RestManager {
 			let sessionConfiguration = URLSessionConfiguration.default
 			let session = URLSession(configuration: sessionConfiguration)
 			let task = session.dataTask(with: request) { (data, response, error) in
-				completion(
+				/// Case 2: When receiving a completion from dataTask
+				self.requestDelegate?.didReceiveResponseFromDataTask(
 					Results(
 						withData: data,
 						response: Response(fromURLResponse: response),
-						error: error)
+						error: error
+					)
 				)
 			}
 			task.resume()
@@ -55,16 +72,17 @@ class RestManager {
 	}
 	
 	/// Fetching data from URL
-	func getData(
-		fromURL url: URL,
-		completion: @escaping (_ data: Data?) -> Void
-	) {
+	func getData(fromURL url: URL) {
 		DispatchQueue.global(qos: .userInitiated).async {
 			let sessionConfiguration = URLSessionConfiguration.default
 			let session = URLSession(configuration: sessionConfiguration)
-			let task = session.dataTask(with: url) { (data, response, error) in
-				guard let data = data else { completion(nil); return }
-				completion(data)
+			let task = session.dataTask(with: url) { [weak self] (data, response, error) in
+				guard let self = self else { return }
+				guard let data = data else {
+					self.dataDelegate?.didFailToGetData()
+					return
+				}
+				self.dataDelegate?.didReceiveData(data)
 			}
 			task.resume()
 		}
@@ -104,7 +122,7 @@ class RestManager {
 		if contentType.contains("application/json") {
 			/// `httpBodyParameter` objecg must be converted into a JSON
 			return try? JSONSerialization.data(
-				withJSONObject: httpBodyParameters,
+				withJSONObject: httpBodyParameters.allValues(),
 				options: [.prettyPrinted, .sortedKeys]
 			)
 		} else if contentType.contains("application/x-www-form-urlencoded") {

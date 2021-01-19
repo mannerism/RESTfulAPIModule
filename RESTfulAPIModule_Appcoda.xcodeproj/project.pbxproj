@@ -14,6 +14,7 @@
 		7828E2A0259EE96A00437B7B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7828E29E259EE96A00437B7B /* LaunchScreen.storyboard */; };
 		7828E2AA259EE9BF00437B7B /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7828E2A9259EE9BF00437B7B /* MainViewController.swift */; };
 		7828E2AE259EEAC700437B7B /* RestManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7828E2AD259EEAC700437B7B /* RestManager.swift */; };
+		78BB4F2B25B07D7A00D19DEA /* CreateUserResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78BB4F2A25B07D7A00D19DEA /* CreateUserResponse.swift */; };
 		78D98EE225AAE2BA0042F2D6 /* Users.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78D98EE125AAE2BA0042F2D6 /* Users.swift */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +29,7 @@
 		7828E2A9259EE9BF00437B7B /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		7828E2AD259EEAC700437B7B /* RestManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestManager.swift; sourceTree = "<group>"; };
 		7828E2B1259EFD1D00437B7B /* Map.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Map.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		78BB4F2A25B07D7A00D19DEA /* CreateUserResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateUserResponse.swift; sourceTree = "<group>"; };
 		78D98EE125AAE2BA0042F2D6 /* Users.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Users.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -95,6 +97,7 @@
 			isa = PBXGroup;
 			children = (
 				78D98EE125AAE2BA0042F2D6 /* Users.swift */,
+				78BB4F2A25B07D7A00D19DEA /* CreateUserResponse.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -172,6 +175,7 @@
 				7828E2AA259EE9BF00437B7B /* MainViewController.swift in Sources */,
 				7828E2AE259EEAC700437B7B /* RestManager.swift in Sources */,
 				78D98EE225AAE2BA0042F2D6 /* Users.swift in Sources */,
+				78BB4F2B25B07D7A00D19DEA /* CreateUserResponse.swift in Sources */,
 				7828E294259EE96900437B7B /* AppDelegate.swift in Sources */,
 				7828E296259EE96900437B7B /* SceneDelegate.swift in Sources */,
 			);
